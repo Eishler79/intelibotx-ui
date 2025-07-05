@@ -8,7 +8,8 @@ function SmartTrade() {
   const [stopLoss, setStopLoss] = useState(1.0);
   const [orderType, setOrderType] = useState("LONG");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+    console.log("Backend:", import.meta.env.VITE_API_BASE_URL);
     e.preventDefault();
     const payload = {
       symbol,
@@ -17,9 +18,21 @@ function SmartTrade() {
       stopLoss,
       orderType,
     };
-    console.log("SmartTrade ejecutado:", payload);
-    alert("SmartTrade enviado al backend (simulado)");
-  };
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/run-smart-trade/${symbol}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+     });
+
+      const data = await response.json();
+      console.log("Respuesta del backend:", data);
+      alert("Orden enviada correctamente");
+    } catch (error) {
+      console.error("Error al enviar la orden:", error);
+      alert("Error al conectar con el backend");
+    }
+};
 
   return (
     <div className="p-6 max-w-2xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md">
